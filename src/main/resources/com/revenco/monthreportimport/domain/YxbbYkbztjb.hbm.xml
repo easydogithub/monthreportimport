@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.revenco.monthreportimport.domain">
+	<class name="YxbbYkbztjb" table="YXBB_YKBZTJB">
+		<id name="id">
+			<generator class="native" />
+		</id>
+		<property name="gsdm" />
+		<property name="ny" />
+		<property name="bbxh" />
+		<property name="xhmc" />
+		<property name="ydlb_id" />
+		<property name="zzjrl" />
+		<property name="zzjhs" />
+		<property name="yjxzrl" />
+		<property name="yjxzhs" />
+		<property name="yjxzjdrl" />
+		<property name="yjxzjdhs" />
+		<property name="yjzrrl" />
+		<property name="yjzrhs" />
+		<property name="yjzrjdrl" />
+		<property name="yjzrjdhs" />
+		<property name="lsjdrl" />
+		<property name="lsjdhs" />
+		<property name="lsjdtcrl" />
+		<property name="lsjdtchs" />
+		<property name="xhrl" />
+		<property name="xhhs" />
+		<property name="jrrl" />
+		<property name="jrhs" />
+		<property name="jrfrrl" />
+		<property name="jrfrhs" />
+		<property name="zttrl" />
+		<property name="ztths" />
+		<property name="ztfrl" />
+		<property name="ztfhs" />
+		<property name="fbqrl" />
+		<property name="fbqhs" />
+		<property name="fbhrl" />
+		<property name="fbhhs" />
+		<property name="gyrl" />
+		<property name="gyhs" />
+		<property name="byzzrl" />
+		<property name="byzzhs" />
+		<property name="nljzzrl" />
+		<property name="nljzzhs" />
+		<property name="nljzzrl_tq" />
+		<property name="nljzzhs_tq" />
+		<property name="dydj" />
+		<property name="jlzt_id" />
+	</class>
+</hibernate-mapping>
