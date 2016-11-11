@@ -3,7 +3,7 @@ package com.revenco.monthreportimport.domain;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import jxl.Workbook;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.revenco.monthreportimport.util.ExcelUtil;
 
@@ -37,12 +37,12 @@ public class YxbbYkbztjbExcel {
 				return "01";
 			}
 
-			index = fileName.indexOf("全资资产");
+			index = fileName.indexOf("全资产");//全资资产->全资产
 			if (index != -1) {
 				return "02";
 			}
 
-			index = fileName.replaceAll("贵州电网公司", "").indexOf("电网");
+			index = fileName.replaceAll("贵州电网", "").indexOf("电网");//贵州电网公司->贵州电网
 			if (index != -1) {
 				return "03";
 			}

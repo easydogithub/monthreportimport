@@ -3,8 +3,9 @@ package com.revenco.monthreportimport.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import jxl.Sheet;
-import jxl.Workbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.revenco.monthreportimport.domain.YxbbYkbztjb;
 import com.revenco.monthreportimport.domain.YxbbYkbztjbExcel;
@@ -39,10 +40,12 @@ public class YxbbYkbztjbExcelManager {
 	public List<YxbbYkbztjb> getOneSheetYxbbYkbztjb(
 			YxbbYkbztjbExcel yxbbYkbztjbExcel, int index) throws Exception {
 		Workbook workbook = yxbbYkbztjbExcel.getWorkbook();
-		Sheet sheet = workbook.getSheet(index);
-		String gsName = convertGsdm(sheet.getName());
-		final int beginRow = 11;// 起始行，从0开始
-		int endRow = 52;// 结束行 //201411月全部增加110kV居民客户（大工业改类）结束行由50->51 ;201502月全部增加110kV非居民，结束行由51-52
+		//Sheet sheet = workbook.getSheet(index);
+		Sheet sheet = workbook.getSheetAt(index);
+		//String gsName = convertGsdm(sheet.getName());
+		String gsName = convertGsdm(sheet.getSheetName());
+		final int beginRow = 9;// 起始行，从0开始；新营销上线后起始行由11->9
+		int endRow = 51;// 结束行 //201411月全部增加110kV居民客户（大工业改类）结束行由50->51 ;201502月全部增加110kV非居民，结束行由51-52;201601月增加非居民220/380V，结束行由52->53；新营销上线后起始行由53->51
 
 		int lastRow = endRow;
 		/* 201411月全部增加110kV居民客户（大工业改类）
@@ -69,122 +72,105 @@ public class YxbbYkbztjbExcelManager {
 		YxbbYkbztjb yxbbYkbztjb = new YxbbYkbztjb();
 		try {
 			Workbook workbook = yxbbYkbztjbExcel.getWorkbook();
-			Sheet sheet = workbook.getSheet(index);
+			Sheet sheet = workbook.getSheetAt(index);
+			
+			Row excelrow = sheet.getRow(row);
 
-			yxbbYkbztjb.setGsdm(convertGsdm(sheet.getName()));// 公司代码
+			yxbbYkbztjb.setGsdm(convertGsdm(sheet.getSheetName()));// 公司代码
 
 			yxbbYkbztjb.setNy(yxbbYkbztjbExcel.getMonth());// 年月
 
 			yxbbYkbztjb.setBbxh(yxbbYkbztjbExcel.getBbxh());// 报表序号
 
-			String xhmc = sheet.getCell(0, row).getContents();
+			String xhmc = excelrow.getCell(0).getStringCellValue(); //sheet.getCell(0, row).getContents();
 			
-			String dydj = sheet.getCell(1, row).getContents();
+			String dydj = excelrow.getCell(1).getStringCellValue();//sheet.getCell(1, row).getContents();
+			String dydjName = this.convertDydjName(dydj);	//标准电压等级名称转换
+			
 			String ydlb_id = convertYdlb(xhmc);
-			xhmc = convertXhmc(xhmc) + "(" + dydj + ")";// 序号名称拼接
+			xhmc = convertXhmc(xhmc) + "(" + dydjName + ")";// 序号名称拼接
 			yxbbYkbztjb.setXhmc(xhmc);// 序号名称
 			yxbbYkbztjb.setYdlb_id(ydlb_id);// 用电类别
 			
 			column++;
-			yxbbYkbztjb.setDydj(convertDydj(dydj));// 电压等级
+			yxbbYkbztjb.setDydj(convertDydj(dydjName));// 电压等级
 			
 			column++;
-			yxbbYkbztjb.setZzjrl(Double.valueOf(sheet.getCell(2, row)
-					.getContents()));// 总装见容量
+			yxbbYkbztjb.setZzjrl(excelrow.getCell(2).getNumericCellValue());// 总装见容量
 
 			column++;
-			yxbbYkbztjb.setZzjhs(Long.valueOf(sheet.getCell(3, row)
-					.getContents()));// 总装见户数
+			yxbbYkbztjb.setZzjhs((long) excelrow.getCell(3).getNumericCellValue());// 总装见户数
 
 			column++;
-			yxbbYkbztjb.setYjxzrl(Double.valueOf(sheet.getCell(4, row)
-					.getContents()));// 永久新装申请报装容量
+			yxbbYkbztjb.setYjxzrl(excelrow.getCell(4).getNumericCellValue());// 永久新装申请报装容量
 
 			column++;
-			yxbbYkbztjb.setYjxzhs(Long.valueOf(sheet.getCell(5, row)
-					.getContents()));// 永久新装申请报装户数
+			yxbbYkbztjb.setYjxzhs((long) excelrow.getCell(5).getNumericCellValue());// 永久新装申请报装户数
 
 			column++;
-			yxbbYkbztjb.setYjxzjdrl(Double.valueOf(sheet.getCell(6, row)
-					.getContents()));// 永久新装接电容量
+			yxbbYkbztjb.setYjxzjdrl(excelrow.getCell(6).getNumericCellValue());// 永久新装接电容量
 
 			column++;
-			yxbbYkbztjb.setYjxzjdhs(Long.valueOf(sheet.getCell(7, row)
-					.getContents()));// 永久新装接电户数
+			yxbbYkbztjb.setYjxzjdhs((long) excelrow.getCell(7).getNumericCellValue());// 永久新装接电户数
 
 			column++;
-			yxbbYkbztjb.setYjzrrl(Double.valueOf(sheet.getCell(8, row)
-					.getContents()));// 永久增容申请报装容量
+			yxbbYkbztjb.setYjzrrl(excelrow.getCell(8).getNumericCellValue());// 永久增容申请报装容量
 
 			column++;
-			yxbbYkbztjb.setYjzrhs(Long.valueOf(sheet.getCell(9, row)
-					.getContents()));// 永久增容申请报装户数
+			yxbbYkbztjb.setYjzrhs((long) excelrow.getCell(9).getNumericCellValue());// 永久增容申请报装户数
 
 			column++;
-			yxbbYkbztjb.setYjzrjdrl(Double.valueOf(sheet.getCell(10, row)
-					.getContents()));// 永久增容申请接电容量
+			yxbbYkbztjb.setYjzrjdrl(excelrow.getCell(10).getNumericCellValue());// 永久增容申请接电容量
 
 			column++;
-			yxbbYkbztjb.setYjzrjdhs(Long.valueOf(sheet.getCell(11, row)
-					.getContents()));// 永久增容申请接电户数
+			yxbbYkbztjb.setYjzrjdhs((long) excelrow.getCell(11).getNumericCellValue());// 永久增容申请接电户数
 
 			column++;
-			yxbbYkbztjb.setLsjdrl(Double.valueOf(sheet.getCell(12, row)
-					.getContents()));// 临时接电接入容量
+			yxbbYkbztjb.setLsjdrl(excelrow.getCell(12).getNumericCellValue());// 临时接电接入容量
 
 			column++;
-			yxbbYkbztjb.setLsjdhs(Long.valueOf(sheet.getCell(13, row)
-					.getContents()));// 临时接电接入户数
+			yxbbYkbztjb.setLsjdhs((long) excelrow.getCell(13).getNumericCellValue());// 临时接电接入户数
 
 			column++;
-			yxbbYkbztjb.setLsjdtcrl(Double.valueOf(sheet.getCell(14, row)
-					.getContents()));// 临时接电退出容量
+			yxbbYkbztjb.setLsjdtcrl(excelrow.getCell(14).getNumericCellValue());// 临时接电退出容量
 
 			column++;
-			yxbbYkbztjb.setLsjdtchs(Long.valueOf(sheet.getCell(15, row)
-					.getContents()));// 临时接电退出户数
+			yxbbYkbztjb.setLsjdtchs((long) excelrow.getCell(15).getNumericCellValue());// 临时接电退出户数
 
 			column++;
-			yxbbYkbztjb.setXhrl(Double.valueOf(sheet.getCell(16, row)
-					.getContents()));// 销户容量
+			yxbbYkbztjb.setXhrl(excelrow.getCell(16).getNumericCellValue());// 销户容量
 
 			column++;
-			yxbbYkbztjb.setXhhs(Long.valueOf(sheet.getCell(17, row)
-					.getContents()));// 销户户数
+			yxbbYkbztjb.setXhhs((long) excelrow.getCell(17).getNumericCellValue());// 销户户数
 
 			column++;
-			yxbbYkbztjb.setJrrl(Double.valueOf(sheet.getCell(18, row)
-					.getContents()));// 减容及恢复减容容量
+			yxbbYkbztjb.setJrrl(excelrow.getCell(18).getNumericCellValue());// 减容及恢复减容容量
 
 			column++;
-			yxbbYkbztjb.setJrhs(Long.valueOf(sheet.getCell(19, row)
-					.getContents()));// 减容及恢复减容户数
+			yxbbYkbztjb.setJrhs((long) excelrow.getCell(19).getNumericCellValue());// 减容及恢复减容户数
 
 			column++;
-			yxbbYkbztjb.setJrfrrl(Double.valueOf(sheet.getCell(20, row)
-					.getContents()));// 减容及恢复复容容量
+			yxbbYkbztjb.setJrfrrl(excelrow.getCell(20).getNumericCellValue());// 减容及恢复复容容量
 
 			column++;
-			yxbbYkbztjb.setJrfrhs(Long.valueOf(sheet.getCell(21, row)
-					.getContents()));// 减容及恢复复容户数
+			yxbbYkbztjb.setJrfrhs((long) excelrow.getCell(21).getNumericCellValue());// 减容及恢复复容户数
 
 			column++;
-			yxbbYkbztjb.setZttrl(Double.valueOf(sheet.getCell(22, row)
-					.getContents()));// 暂停及恢复停容容量
+			yxbbYkbztjb.setZttrl(excelrow.getCell(22).getNumericCellValue());// 暂停及恢复停容容量
 			
 			column++;
-			yxbbYkbztjb.setZtths(Long.valueOf(sheet.getCell(23, row)
-					.getContents()));// 暂停及恢复停容户数
+			yxbbYkbztjb.setZtths((long) excelrow.getCell(23).getNumericCellValue());// 暂停及恢复停容户数
 			
 			column++;
-			yxbbYkbztjb.setZtfrl(Double.valueOf(sheet.getCell(24, row)
-					.getContents()));// 暂停及恢复复容容量
+			yxbbYkbztjb.setZtfrl(excelrow.getCell(24).getNumericCellValue());// 暂停及恢复复容容量
 			
 			column++;
-			yxbbYkbztjb.setZtfhs(Long.valueOf(sheet.getCell(25, row)
-					.getContents()));// 暂停及恢复复容户数
+			yxbbYkbztjb.setZtfhs((long) excelrow.getCell(25).getNumericCellValue());// 暂停及恢复复容户数
 
 			column++;
+			
+			/*
+			 * 新营销上线后无这四项指标
 			yxbbYkbztjb.setFbqrl(Double.valueOf(sheet.getCell(26, row)
 					.getContents()));// 分并前容量
 			
@@ -199,38 +185,43 @@ public class YxbbYkbztjbExcelManager {
 			column++;
 			yxbbYkbztjb.setFbhhs(Long.valueOf(sheet.getCell(29, row)
 					.getContents()));// 分并后户数
+			column++;
+			*/
+			
+			yxbbYkbztjb.setFbqrl(0);// 分并前容量
+			
+			column++;
+			yxbbYkbztjb.setFbqhs(0);// 分并前户数
+			
+			column++;
+			yxbbYkbztjb.setFbhrl(0);// 分并后容量
+			
+			column++;
+			yxbbYkbztjb.setFbhhs(0);// 分并后户数
+			column++;
+			
+			yxbbYkbztjb.setGyrl(excelrow.getCell(26).getNumericCellValue());// 改压或改类容量
+			
+			column++;
+			yxbbYkbztjb.setGyhs((long) excelrow.getCell(27).getNumericCellValue());// 改压或改类户数
 
 			column++;
-			yxbbYkbztjb.setGyrl(Double.valueOf(sheet.getCell(30, row)
-					.getContents()));// 改压或改类容量
+			yxbbYkbztjb.setByzzrl(excelrow.getCell(28).getNumericCellValue());// 本月实增容量
 			
 			column++;
-			yxbbYkbztjb.setGyhs(Long.valueOf(sheet.getCell(31, row)
-					.getContents()));// 改压或改类户数
+			yxbbYkbztjb.setByzzhs((long) excelrow.getCell(29).getNumericCellValue());// 本月实增户数
 
 			column++;
-			yxbbYkbztjb.setByzzrl(Double.valueOf(sheet.getCell(32, row)
-					.getContents()));// 本月实增容量
+			yxbbYkbztjb.setNljzzrl(excelrow.getCell(30).getNumericCellValue());// 年累计实增容量
 			
 			column++;
-			yxbbYkbztjb.setByzzhs(Long.valueOf(sheet.getCell(33, row)
-					.getContents()));// 本月实增户数
-
-			column++;
-			yxbbYkbztjb.setNljzzrl(Double.valueOf(sheet.getCell(34, row)
-					.getContents()));// 年累计实增容量
+			yxbbYkbztjb.setNljzzhs((long) excelrow.getCell(31).getNumericCellValue());// 年累计实增户数
 			
 			column++;
-			yxbbYkbztjb.setNljzzhs(Long.valueOf(sheet.getCell(35, row)
-					.getContents()));// 年累计实增户数
+			yxbbYkbztjb.setNljzzrl_tq(excelrow.getCell(32).getNumericCellValue());// 同期年累计实增容量
 			
 			column++;
-			yxbbYkbztjb.setNljzzrl_tq(Double.valueOf(sheet.getCell(36, row)
-					.getContents()));// 同期年累计实增容量
-			
-			column++;
-			yxbbYkbztjb.setNljzzhs_tq(Long.valueOf(sheet.getCell(37, row)
-					.getContents()));// 同期年累计实增户数
+			yxbbYkbztjb.setNljzzhs_tq((long) excelrow.getCell(33).getNumericCellValue());// 同期年累计实增户数
 
 			yxbbYkbztjb.setJlzt_id("1");// 记录状态
 		} catch (Exception e) {
@@ -308,6 +299,42 @@ public class YxbbYkbztjbExcelManager {
 		}
 		return dydj;
 	}
+	
+	private String convertDydjName(String sourceDydj) throws Exception{
+		String dydj = "";
+		switch (sourceDydj) {
+		case "10kV":
+		case "10KV":	//新营销报表出现	农业排灌	10KV
+			dydj = "10kV";
+			break;
+		case "20kV":
+			dydj = "20kV";
+			break;
+		case "35kV":
+			dydj = "35kV";
+			break;
+		case "110kV":
+			dydj = "110kV";
+			break;
+		case "220kV":
+			dydj = "220kV";
+			break;
+		case "220/380V":
+		case "220V>380V":	//新营销报表出现	农业排灌	220V>380V
+			dydj = "220/380V";
+			break;
+		case "小计":
+			dydj = "小计";
+			break;
+		case "合计":
+			dydj = "合计";
+			break;
+		default:
+			dydj = sourceDydj;
+			throw new Exception("电压等级名称无法解析：" + dydj);
+		}
+		return dydj;
+	}
 
 	private String convertYdlb(String sourceYdlb) throws Exception {
 		String ydlb = "";
@@ -379,6 +406,9 @@ public class YxbbYkbztjbExcelManager {
 			break;
 		case "铜仁":
 			gsdm = "060500";
+			break;
+		case "贵安":	//201601月增加贵安局
+			gsdm = "061000";
 			break;
 		default:
 			gsdm = sourceGsdm;
